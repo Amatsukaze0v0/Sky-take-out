@@ -1,28 +1,57 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.3'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.springframework.boot' version '3.2.5' apply false
+    id 'io.spring.dependency-management' version '1.1.4' apply false
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+// 为所有项目(包括根项目)配置仓库
+allprojects {
+    repositories {
+        mavenCentral()
     }
 }
 
-repositories {
-    mavenCentral()
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'com.skytakeout'
+    version = '1.0-SNAPSHOT'
+    sourceCompatibility = '17'
+
+    dependencies {
+        // Spring Boot 核心依赖
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+
+        // Lombok 依赖
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+
+        // 数据库驱动 - 选择一个使用
+        // runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+        runtimeOnly 'mysql:mysql-connector-java:8.0.28'
+
+        // 测试支持
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+// 只在sky-server模块中配置bootJar任务
+project(':sky-server') {
+    bootJar {
+        mainClass = 'com.skytakeout.SkyTakeOutApplication'
+        enabled = true
+    }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+// 对于其他模块，禁用bootJar，启用jar
+project(':sky-pojo') {
+    bootJar {
+        enabled = false
+    }
+    jar {
+        enabled = true
+    }
 }
