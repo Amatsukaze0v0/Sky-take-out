@@ -1,2 +1,2 @@
 rootProject.name = 'Sky-take-out'
-include 'sky-pojo', 'sky-server'
+include 'sky-common','sky-pojo', 'sky-server'

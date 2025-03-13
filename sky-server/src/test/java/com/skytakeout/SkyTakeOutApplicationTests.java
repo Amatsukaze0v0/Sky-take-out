@@ -1,4 +1,4 @@
-package com.example.skytakeout;
+package com.skytakeout;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

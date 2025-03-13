@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>员工管理测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, button {
+            padding: 8px;
+            width: 100%;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+<h1>员工管理测试页面</h1>
+
+<!-- 登录表单 -->
+<div id="loginForm">
+    <h2>登录</h2>
+    <div class="form-group">
+        <label for="username">用户名:</label>
+        <input type="text" id="username" value="admin">
+    </div>
+    <div class="form-group">
+        <label for="password">密码:</label>
+        <input type="password" id="password" value="123456">
+    </div>
+    <button onclick="login()">登录</button>
+</div>
+
+<!-- 添加员工表单 -->
+<div id="addEmployeeForm" style="display: none;">
+    <h2>添加员工</h2>
+    <div class="form-group">
+        <label for="empName">姓名:</label>
+        <input type="text" id="empName">
+    </div>
+    <div class="form-group">
+        <label for="empUsername">用户名:</label>
+        <input type="text" id="empUsername">
+    </div>
+    <div class="form-group">
+        <label for="empPhone">手机号:</label>
+        <input type="text" id="empPhone">
+    </div>
+    <div class="form-group">
+        <label for="empSex">性别:</label>
+        <select id="empSex" style="width: 100%; padding: 8px;">
+            <option value="1">男</option>
+            <option value="0">女</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="empIdNumber">身份证号:</label>
+        <input type="text" id="empIdNumber">
+    </div>
+    <button onclick="addEmployee()">添加员工</button>
+</div>
+<!-- 分页查询表单 -->
+<div id="queryEmployeeForm" style="display: none; margin-top: 30px;">
+    <h2>员工分页查询</h2>
+    <div class="form-group">
+        <label for="queryName">员工姓名:</label>
+        <input type="text" id="queryName" placeholder="可选">
+    </div>
+    <div class="form-group">
+        <label for="queryPage">页码:</label>
+        <input type="number" id="queryPage" value="1" min="1">
+    </div>
+    <div class="form-group">
+        <label for="queryPageSize">每页记录数:</label>
+        <input type="number" id="queryPageSize" value="10" min="1">
+    </div>
+    <button onclick="queryEmployees()">查询</button>
+</div>
+<!-- 结果显示区域 -->
+<div id="result"></div>
+
+<script>
+    // 登录函数
+    function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/admin/employee/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.code === 1) {
+                    document.getElementById('result').innerHTML = '登录成功: ' + JSON.stringify(data);
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('addEmployeeForm').style.display = 'block';
+                    document.getElementById('queryEmployeeForm').style.display = 'block'; // 显示查询表单
+                } else {
+                    document.getElementById('result').innerHTML = '登录失败: ' + JSON.stringify(data);
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误: ' + error;
+            });
+    }
+
+    // 添加员工函数
+    function addEmployee() {
+        const name = document.getElementById('empName').value;
+        const username = document.getElementById('empUsername').value;
+        const phone = document.getElementById('empPhone').value;
+        const sex = document.getElementById('empSex').value;
+        const idNumber = document.getElementById('empIdNumber').value;
+
+        fetch('/admin/employee', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                username: username,
+                phone: phone,
+                sex: sex,
+                idNumber: idNumber
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = '添加员工结果: ' + JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误: ' + error;
+            });
+    }
+
+    //分页查询函数
+    function queryEmployees() {
+        const name = document.getElementById("queryName").value;
+        const page = document.getElementById("queryPage").value;
+        const size = document.getElementById("queryPageSize").value;
+
+        fetch('/admin/employee/page?page='+page+'&pageSize='+size+(name ? '&name=' + name : ''), {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(data => {
+                // 将结果显示在页面上
+                document.getElementById('result').innerHTML = '查询结果: ' + JSON.stringify(data);
+                console.log('查询结果:', data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误: ' + error;
+                console.error('请求错误:', error);
+            });
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+dependencies {
+    // 添加对 sky-pojo 模块的依赖
+    implementation project(':sky-pojo')
+    implementation project(path: ':sky-common')
+    // 测试依赖
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+test {
+    useJUnitPlatform()
+}

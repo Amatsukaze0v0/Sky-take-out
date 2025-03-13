@@ -35,6 +35,9 @@ subprojects {
 
         // 测试支持
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+        //SpringDoc OpenAPI依赖
+        implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
     }
 }
 
@@ -54,4 +57,20 @@ project(':sky-pojo') {
     jar {
         enabled = true
     }
+}
+
+project(':sky-common') {
+    bootJar {
+        enabled = false
+    }
+    jar {
+        enabled = true
+    }
+}
+
+dependencies {
+    implementation 'org.projectlombok:lombok:1.18.28'
+}
+test {
+    useJUnitPlatform()
 }
