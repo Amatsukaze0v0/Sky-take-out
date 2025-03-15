@@ -14,17 +14,25 @@ import com.skytakeout.exception.PasswordErrorException;
 import com.skytakeout.repository.EmployeeRepository;
 import com.skytakeout.result.PageResult;
 import com.skytakeout.service.EmployeeService;
+import com.skytakeout.util.AttributeFillerUtil;
 import com.skytakeout.util.SHA256Util;
 import com.skytakeout.util.SaltGenerator;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,7 +94,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setCreateTime(LocalDateTime.now());    //设置时间
         employee.setUpdateTime(LocalDateTime.now());
 
-        //TODO: 设置修改人，更新人
         Long currentId = BaseContext.getCurrentID();
         if (currentId != null) {
             employee.setCreateUser(currentId);
@@ -129,15 +136,50 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void empStatus(Integer status, Long id) {
 
+        employeeRepository.empStatus(status, id);
     }
 
     @Override
     public Employee getById(Long id) {
-        return null;
+        Employee found = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("员工不存在"));
+        found.setPassword("****");
+        found.setSalt("****");
+        return found;
     }
 
     @Override
     public void update(EmployeeDTO employeeDTO) {
-
+        Employee employee = new Employee();
+        // 使用BeanUtils复制属性，忽略空值
+        BeanUtils.copyProperties(employeeDTO, employee, AttributeFillerUtil.getNullPropertyNames(employeeDTO));
+        //其他需要的Attribute
+        //设置时间
+        employee.setUpdateTime(LocalDateTime.now());
+        //修改人
+        Long currentId = BaseContext.getCurrentID();
+        if (currentId != null) {
+            employee.setUpdateUser(currentId);
+        } else {
+            // 如果获取不到当前用户ID，设置默认值
+            employee.setUpdateUser(1L);
+        }
+        employeeRepository.save(employee);
     }
+//    /**
+//     * 获取对象中值为null的属性名数组
+//     */
+//    private String[] getNullPropertyNames(Object source) {
+//        final BeanWrapper src = new BeanWrapperImpl(source);
+//        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+//
+//        Set<String> emptyNames = new HashSet<>();
+//        for(PropertyDescriptor pd : pds) {
+//            Object srcValue = src.getPropertyValue(pd.getName());
+//            if (srcValue == null) emptyNames.add(pd.getName());
+//        }
+//
+//        String[] result = new String[emptyNames.size()];
+//        return emptyNames.toArray(result);
+//    }
 }

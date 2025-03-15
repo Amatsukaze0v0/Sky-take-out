@@ -57,17 +57,20 @@ public class EmployeeController {
         request.getSession().removeAttribute("employee");
         return Result.success("退出成功");
     }
+
     @PostMapping
     @Operation(summary = "新增员工")
-    public Result<String> save(@RequestBody EmployeeDTO employeeDTO, HttpServletRequest request) {
+    public Result<String> save(@RequestBody EmployeeDTO employeeDTO) {
         log.info("新增员工：{}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
     }
-    /*
-    * 员工分页查询
-    * 接收QUERY传参而非json
-    * */
+    /**
+     * 员工分页查询
+     * 接收QUERY传参而非json
+     * @param name, page, pageSize
+     * @return Result<PageResult>
+     */
     @GetMapping("/page")
     @Operation(summary = "分页查询")
     public Result<PageResult> pageQuery(@RequestParam(required = false) String name,
@@ -82,5 +85,26 @@ public class EmployeeController {
         log.info("员工分页查询：{}", employeePageQueryDTO);
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
+    }
+    @PostMapping("/status/{status}")
+    @Operation(summary = "启用/禁用修改")
+    public Result changeStatus(@PathVariable Integer status, @RequestParam Long id) {
+        log.info("启用禁用员工账号:{},{}", status, id);
+        employeeService.empStatus(status, id);
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "根据id查询")
+    public Result<Employee> findEmployee(Long id) {
+        log.info("检索员工ID：{}", id );
+        Employee founded = employeeService.getById(id);
+        return Result.success(founded);
+    }
+    @PutMapping
+    @Operation(summary = "编辑员工信息")
+    public Result update(@RequestBody EmployeeDTO employeeDTO) {
+        employeeService.update(employeeDTO);
+        return Result.success();
     }
 }

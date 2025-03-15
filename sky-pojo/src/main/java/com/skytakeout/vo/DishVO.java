@@ -1,10 +1,12 @@
 package com.skytakeout.vo;
 
+import com.skytakeout.entity.Dish;
 import com.skytakeout.entity.DishFlavor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -39,4 +41,15 @@ public class DishVO implements Serializable {
     private List<DishFlavor> flavors = new ArrayList<>();
 
     //private Integer copies;
+    /**
+     * Constructor that takes a Dish object and category name
+     * @param dish The dish object
+     * @param categoryName The name of the category
+     */
+    public DishVO(Dish dish, String categoryName) {
+        // Copy properties from Dish to DishVO
+        BeanUtils.copyProperties(dish, this);
+        // Set the category name
+        this.categoryName = categoryName;
+    }
 }

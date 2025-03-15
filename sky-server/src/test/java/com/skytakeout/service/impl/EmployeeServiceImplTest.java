@@ -11,10 +11,14 @@ import com.skytakeout.service.EmployeeService;
 import com.skytakeout.util.SHA256Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -151,5 +155,40 @@ public class EmployeeServiceImplTest {
 
         // 验证Repository的save方法是否被调用
         verify(employeeRepository, times(1)).save(any(Employee.class));
+    }
+    @Test
+    void testUpdateEmployee() {
+        // 准备测试数据
+        Long employeeId = 1L;
+
+        Employee existingEmployee = new Employee();
+        existingEmployee.setId(employeeId);
+        existingEmployee.setName("原始姓名");
+        existingEmployee.setUsername("original");
+        existingEmployee.setPhone("13800000000");
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setId(employeeId);
+        employeeDTO.setName("更新后的姓名");
+        employeeDTO.setPhone("13900000000");
+
+        // 模拟Repository行为
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(existingEmployee));
+
+        // 执行测试
+        employeeService.update(employeeDTO);
+
+        // 验证Repository的save方法是否被调用，以及参数是否正确
+        verify(employeeRepository, times(1)).save(any(Employee.class));
+
+        // 可以进一步验证传给save方法的Employee对象的属性是否符合预期
+        // 这需要使用ArgumentCaptor捕获参数
+//        ArgumentCaptor<Employee> employeeCaptor = ArgumentCaptor.forClass(Employee.class);
+//        verify(employeeRepository).save(employeeCaptor.capture());
+//        Employee savedEmployee = employeeCaptor.getValue();
+//
+//        assertEquals("更新后的姓名", savedEmployee.getName());
+//        assertEquals("13900000000", savedEmployee.getPhone());
+//        assertEquals("original", savedEmployee.getUsername()); // 未更新的字段应保持原值
     }
 }
