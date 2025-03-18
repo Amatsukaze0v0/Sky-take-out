@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCaching
 @EntityScan(basePackages = "com.skytakeout.entity") // 扫描实体类
 @EnableJpaRepositories(basePackages = "com.skytakeout.repository") // 扫描Repository
+@ComponentScan(basePackages = {"com.skytakeout", "com.skytakeout.config"})
 public class SkyTakeOutApplication {
     public static void main(String[] args) {
         SpringApplication.run(SkyTakeOutApplication.class, args);

@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>员工管理测试页面</title>
+    <title>Sky外卖管理测试页面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -18,9 +18,10 @@
             display: block;
             margin-bottom: 5px;
         }
-        input, button {
+        input, button, select, textarea {
             padding: 8px;
             width: 100%;
+            box-sizing: border-box;
         }
         button {
             background-color: #4CAF50;
@@ -38,11 +39,71 @@
             border: 1px solid #ddd;
             background-color: #f9f9f9;
             min-height: 100px;
+            overflow-x: auto;
+        }
+        .module-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .module {
+            display: none;
+            margin-top: 20px;
+        }
+        .module.active {
+            display: block;
+        }
+        .sub-tabs {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        .sub-tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: #e9e9e9;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+        .sub-tab.active {
+            background-color: #45a049;
+            color: white;
+        }
+        .sub-module {
+            display: none;
+        }
+        .sub-module.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
-<h1>员工管理测试页面</h1>
+<h1>Sky外卖管理测试页面</h1>
 
 <!-- 登录表单 -->
 <div id="loginForm">
@@ -58,50 +119,301 @@
     <button onclick="login()">登录</button>
 </div>
 
-<!-- 添加员工表单 -->
-<div id="addEmployeeForm" style="display: none;">
-    <h2>添加员工</h2>
-    <div class="form-group">
-        <label for="empName">姓名:</label>
-        <input type="text" id="empName">
+<!-- 主模块选项卡 -->
+<div id="mainContent" style="display: none;">
+    <div class="module-tabs">
+        <div class="tab active" onclick="switchModule('employeeModule')">员工管理</div>
+        <div class="tab" onclick="switchModule('categoryModule')">分类管理</div>
+        <div class="tab" onclick="switchModule('dishModule')">菜品管理</div>
+        <button id="statusButton" onclick="openModal()" style="margin-left: auto; width: auto; padding: 10px 15px;">加载中...</button>
     </div>
-    <div class="form-group">
-        <label for="empUsername">用户名:</label>
-        <input type="text" id="empUsername">
+
+    <div id="employeeModule" class="module active">
+        <div class="sub-tabs">
+            <div class="sub-tab active" onclick="switchSubModule('employeeModule', 'addEmployeeForm')">添加员工</div>
+            <div class="sub-tab" onclick="switchSubModule('employeeModule', 'queryEmployeeForm')">查询员工</div>
+        </div>
+        <!-- 添加员工表单 -->
+        <div id="addEmployeeForm" class="sub-module active">
+            <h2>添加员工</h2>
+            <div class="form-group">
+                <label for="empName">姓名:</label>
+                <input type="text" id="empName">
+            </div>
+            <div class="form-group">
+                <label for="empUsername">用户名:</label>
+                <input type="text" id="empUsername">
+            </div>
+            <div class="form-group">
+                <label for="empPhone">手机号:</label>
+                <input type="text" id="empPhone">
+            </div>
+            <div class="form-group">
+                <label for="empSex">性别:</label>
+                <select id="empSex" style="width: 100%; padding: 8px;">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="empIdNumber">身份证号:</label>
+                <input type="text" id="empIdNumber">
+            </div>
+            <button onclick="addEmployee()">添加员工</button>
+        </div>
+        <!-- 分页查询表单 -->
+        <div id="queryEmployeeForm" style="margin-top: 30px;" class="sub-module">
+            <h2>员工分页查询</h2>
+            <div class="form-group">
+                <label for="queryName">员工姓名:</label>
+                <input type="text" id="queryName" placeholder="可选">
+            </div>
+            <div class="form-group">
+                <label for="queryPage">页码:</label>
+                <input type="number" id="queryPage" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label for="queryPageSize">每页记录数:</label>
+                <input type="number" id="queryPageSize" value="10" min="1">
+            </div>
+            <button onclick="queryEmployees()">查询</button>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="empPhone">手机号:</label>
-        <input type="text" id="empPhone">
+    <!-- 分类管理模块 -->
+    <div id="categoryModule" class="module">
+        <div class="sub-tabs">
+            <div class="sub-tab active" onclick="switchSubModule('categoryModule', 'addCategoryForm')">添加分类</div>
+            <div class="sub-tab" onclick="switchSubModule('categoryModule', 'queryCategoryForm')">查询分类</div>
+            <div class="sub-tab" onclick="switchSubModule('categoryModule', 'updateCategoryForm')">修改分类</div>
+            <div class="sub-tab" onclick="switchSubModule('categoryModule', 'deleteCategoryForm')">删除分类</div>
+        </div>
+
+        <!-- 添加分类表单 -->
+        <div id="addCategoryForm" class="sub-module active">
+            <h2>添加分类</h2>
+            <div class="form-group">
+                <label for="categoryName">分类名称:</label>
+                <input type="text" id="categoryName">
+            </div>
+            <div class="form-group">
+                <label for="categoryType">分类类型:</label>
+                <select id="categoryType">
+                    <option value="1">菜品分类</option>
+                    <option value="2">套餐分类</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="categorySort">排序:</label>
+                <input type="number" id="categorySort" value="0">
+            </div>
+            <button onclick="addCategory()">添加分类</button>
+        </div>
+
+        <!-- 查询分类表单 -->
+        <div id="queryCategoryForm" class="sub-module">
+            <h2>分类查询</h2>
+            <div class="form-group">
+                <label for="queryCategoryType">分类类型:</label>
+                <select id="queryCategoryType">
+                    <option value="">全部</option>
+                    <option value="1">菜品分类</option>
+                    <option value="2">套餐分类</option>
+                </select>
+            </div>
+            <button onclick="queryCategories()">查询</button>
+            <div id="categoryList"></div>
+        </div>
+
+        <!-- 修改分类表单 -->
+        <div id="updateCategoryForm" class="sub-module">
+            <h2>修改分类</h2>
+            <div class="form-group">
+                <label for="updateCategoryId">分类ID:</label>
+                <input type="number" id="updateCategoryId">
+            </div>
+            <div class="form-group">
+                <label for="updateCategoryName">分类名称:</label>
+                <input type="text" id="updateCategoryName">
+            </div>
+            <div class="form-group">
+                <label for="updateCategorySort">排序:</label>
+                <input type="number" id="updateCategorySort" value="0">
+            </div>
+            <button onclick="updateCategory()">修改分类</button>
+        </div>
+
+        <!-- 删除分类表单 -->
+        <div id="deleteCategoryForm" class="sub-module">
+            <h2>删除分类</h2>
+            <div class="form-group">
+                <label for="deleteCategoryId">分类ID:</label>
+                <input type="number" id="deleteCategoryId">
+            </div>
+            <button onclick="deleteCategory()">删除分类</button>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="empSex">性别:</label>
-        <select id="empSex" style="width: 100%; padding: 8px;">
-            <option value="1">男</option>
-            <option value="0">女</option>
-        </select>
+
+    <!-- 菜品管理模块 -->
+    <div id="dishModule" class="module">
+        <div class="sub-tabs">
+            <div class="sub-tab active" onclick="switchSubModule('dishModule', 'addDishForm')">添加菜品</div>
+            <div class="sub-tab" onclick="switchSubModule('dishModule', 'queryDishForm')">查询菜品</div>
+            <div class="sub-tab" onclick="switchSubModule('dishModule', 'updateDishForm')">修改菜品</div>
+            <div class="sub-tab" onclick="switchSubModule('dishModule', 'deleteDishForm')">删除菜品</div>
+            <div class="sub-tab" onclick="switchSubModule('dishModule', 'dishStatusForm')">菜品状态</div>
+        </div>
+
+        <!-- 添加菜品表单 -->
+        <div id="addDishForm" class="sub-module active">
+            <h2>添加菜品</h2>
+            <div class="form-group">
+                <label for="dishName">菜品名称:</label>
+                <input type="text" id="dishName">
+            </div>
+            <div class="form-group">
+                <label for="dishCategoryId">分类ID:</label>
+                <input type="number" id="dishCategoryId">
+            </div>
+            <div class="form-group">
+                <label for="dishPrice">价格:</label>
+                <input type="number" id="dishPrice" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="dishImage">图片:</label>
+                <input type="text" id="dishImage" placeholder="图片路径">
+            </div>
+            <div class="form-group">
+                <label for="dishDescription">描述:</label>
+                <textarea id="dishDescription" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="dishStatus">状态:</label>
+                <select id="dishStatus">
+                    <option value="1">起售</option>
+                    <option value="0">停售</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>口味:</label>
+                <div id="flavorContainer">
+                    <div class="flavor-item" style="display: flex; margin-bottom: 5px;">
+                        <input type="text" placeholder="口味名称" style="width: 45%; margin-right: 5px;">
+                        <input type="text" placeholder="口味值" style="width: 45%; margin-right: 5px;">
+                        <button type="button" style="width: 10%;" onclick="removeFlavor(this)">-</button>
+                    </div>
+                </div>
+                <button type="button" onclick="addFlavorField()">添加口味</button>
+            </div>
+            <button onclick="addDish()">添加菜品</button>
+        </div>
+
+        <!-- 查询菜品表单 -->
+        <div id="queryDishForm" class="sub-module">
+            <h2>菜品分页查询</h2>
+            <div class="form-group">
+                <label for="queryDishName">菜品名称:</label>
+                <input type="text" id="queryDishName" placeholder="可选">
+            </div>
+            <div class="form-group">
+                <label for="queryDishCategoryId">分类ID:</label>
+                <input type="number" id="queryDishCategoryId" placeholder="可选">
+            </div>
+            <div class="form-group">
+                <label for="queryDishPage">页码:</label>
+                <input type="number" id="queryDishPage" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label for="queryDishPageSize">每页记录数:</label>
+                <input type="number" id="queryDishPageSize" value="10" min="1">
+            </div>
+            <button onclick="queryDishes()">查询</button>
+            <div id="dishList"></div>
+        </div>
+
+        <!-- 修改菜品表单 -->
+        <div id="updateDishForm" class="sub-module">
+            <h2>修改菜品</h2>
+            <div class="form-group">
+                <label for="updateDishId">菜品ID:</label>
+                <input type="number" id="updateDishId">
+                <button onclick="getDishById()">获取菜品信息</button>
+            </div>
+            <div id="updateDishDetail" style="display: none;">
+                <div class="form-group">
+                    <label for="updateDishName">菜品名称:</label>
+                    <input type="text" id="updateDishName">
+                </div>
+                <div class="form-group">
+                    <label for="updateDishCategoryId">分类ID:</label>
+                    <input type="number" id="updateDishCategoryId">
+                </div>
+                <div class="form-group">
+                    <label for="updateDishPrice">价格:</label>
+                    <input type="number" id="updateDishPrice" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="updateDishImage">图片:</label>
+                    <input type="text" id="updateDishImage">
+                </div>
+                <div class="form-group">
+                    <label for="updateDishDescription">描述:</label>
+                    <textarea id="updateDishDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>口味:</label>
+                    <div id="updateFlavorContainer"></div>
+                    <button type="button" onclick="addUpdateFlavorField()">添加口味</button>
+                </div>
+                <button onclick="updateDish()">修改菜品</button>
+            </div>
+        </div>
+
+        <!-- 删除菜品表单 -->
+        <div id="deleteDishForm" class="sub-module">
+            <h2>删除菜品</h2>
+            <div class="form-group">
+                <label for="deleteDishIds">菜品ID(多个用逗号分隔):</label>
+                <input type="text" id="deleteDishIds">
+            </div>
+            <button onclick="deleteDishes()">删除菜品</button>
+        </div>
+
+        <!-- 菜品状态表单 -->
+        <div id="dishStatusForm" class="sub-module">
+            <h2>修改菜品状态</h2>
+            <div class="form-group">
+                <label for="statusDishId">菜品ID:</label>
+                <input type="number" id="statusDishId">
+            </div>
+            <div class="form-group">
+                <label for="dishNewStatus">状态:</label>
+                <select id="dishNewStatus">
+                    <option value="1">起售</option>
+                    <option value="0">停售</option>
+                </select>
+            </div>
+            <button onclick="changeDishStatus()">修改状态</button>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="empIdNumber">身份证号:</label>
-        <input type="text" id="empIdNumber">
+
+    <!-- 切换营业状态 -->
+    <!-- 弹窗结构 -->
+    <div id="statusModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4);">
+        <div class="modal-content" style="background-color: white; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 300px; border-radius: 5px;">
+            <span class="close-btn" onclick="closeModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2>设置店铺营业状态</h2>
+            <div style="margin: 20px 0;">
+                <label style="display: block; margin-bottom: 10px;">
+                    <input type="radio" name="status" value="1" /> 营业中
+                </label>
+                <label style="display: block;">
+                    <input type="radio" name="status" value="0" /> 打烊中
+                </label>
+            </div>
+            <button onclick="updateStatus()" style="width: 100%;">确认</button>
+        </div>
     </div>
-    <button onclick="addEmployee()">添加员工</button>
-</div>
-<!-- 分页查询表单 -->
-<div id="queryEmployeeForm" style="display: none; margin-top: 30px;">
-    <h2>员工分页查询</h2>
-    <div class="form-group">
-        <label for="queryName">员工姓名:</label>
-        <input type="text" id="queryName" placeholder="可选">
-    </div>
-    <div class="form-group">
-        <label for="queryPage">页码:</label>
-        <input type="number" id="queryPage" value="1" min="1">
-    </div>
-    <div class="form-group">
-        <label for="queryPageSize">每页记录数:</label>
-        <input type="number" id="queryPageSize" value="10" min="1">
-    </div>
-    <button onclick="queryEmployees()">查询</button>
+
 </div>
 <!-- 结果显示区域 -->
 <div id="result"></div>
@@ -124,21 +436,70 @@
         })
             .then(response => response.json())
             .then(data => {
-                if(data.code === 1) {
-                    document.getElementById('result').innerHTML = '登录成功: ' + JSON.stringify(data);
+                if (data.code === 1) {
+                    // 登录成功
                     document.getElementById('loginForm').style.display = 'none';
-                    document.getElementById('addEmployeeForm').style.display = 'block';
-                    document.getElementById('queryEmployeeForm').style.display = 'block'; // 显示查询表单
+                    document.getElementById('mainContent').style.display = 'block';
+                    document.getElementById('result').innerHTML = '登录成功：' + JSON.stringify(data.data);
                 } else {
-                    document.getElementById('result').innerHTML = '登录失败: ' + JSON.stringify(data);
+                    // 登录失败
+                    document.getElementById('result').innerHTML = '登录失败：' + data.msg;
                 }
             })
             .catch(error => {
-                document.getElementById('result').innerHTML = '请求错误: ' + error;
+                document.getElementById('result').innerHTML = '请求错误：' + error;
             });
     }
 
-    // 添加员工函数
+    // 切换主模块
+    function switchModule(moduleId) {
+        // 隐藏所有模块
+        const modules = document.getElementsByClassName('module');
+        for (let i = 0; i < modules.length; i++) {
+            modules[i].classList.remove('active');
+        }
+
+        // 取消所有选项卡的活动状态
+        const tabs = document.getElementsByClassName('tab');
+        for (let i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove('active');
+        }
+
+        // 显示选中的模块
+        document.getElementById(moduleId).classList.add('active');
+
+        // 设置选中的选项卡为活动状态
+        const activeTab = document.querySelector(`.tab[onclick="switchModule('${moduleId}')"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
+    }
+
+    // 切换子模块
+    function switchSubModule(parentModuleId, subModuleId) {
+        // 获取父模块下的所有子模块
+        const subModules = document.querySelectorAll(`#${parentModuleId} .sub-module`);
+        for (let i = 0; i < subModules.length; i++) {
+            subModules[i].classList.remove('active');
+        }
+
+        // 获取父模块下的所有子选项卡
+        const subTabs = document.querySelectorAll(`#${parentModuleId} .sub-tab`);
+        for (let i = 0; i < subTabs.length; i++) {
+            subTabs[i].classList.remove('active');
+        }
+
+        // 显示选中的子模块
+        document.getElementById(subModuleId).classList.add('active');
+
+        // 设置选中的子选项卡为活动状态
+        const activeSubTab = document.querySelector(`.sub-tab[onclick="switchSubModule('${parentModuleId}', '${subModuleId}')"]`);
+        if (activeSubTab) {
+            activeSubTab.classList.add('active');
+        }
+    }
+
+    // 添加员工
     function addEmployee() {
         const name = document.getElementById('empName').value;
         const username = document.getElementById('empUsername').value;
@@ -161,34 +522,525 @@
         })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('result').innerHTML = '添加员工结果: ' + JSON.stringify(data);
+                document.getElementById('result').innerHTML = JSON.stringify(data);
             })
             .catch(error => {
-                document.getElementById('result').innerHTML = '请求错误: ' + error;
+                document.getElementById('result').innerHTML = '请求错误：' + error;
             });
     }
 
-    //分页查询函数
+    // 员工分页查询
     function queryEmployees() {
-        const name = document.getElementById("queryName").value;
-        const page = document.getElementById("queryPage").value;
-        const size = document.getElementById("queryPageSize").value;
+        const name = document.getElementById('queryName').value;
+        const page = document.getElementById('queryPage').value;
+        const pageSize = document.getElementById('queryPageSize').value;
 
-        fetch('/admin/employee/page?page='+page+'&pageSize='+size+(name ? '&name=' + name : ''), {
-            method: 'GET'
+        let url = `/admin/employee/page?page=${page}&pageSize=${pageSize}`;
+        if (name) {
+            url += `&name=${name}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 添加分类
+    function addCategory() {
+        const name = document.getElementById('categoryName').value;
+        const type = document.getElementById('categoryType').value;
+        const sort = document.getElementById('categorySort').value;
+
+        fetch('/admin/category', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                type: type,
+                sort: sort
+            })
         })
             .then(response => response.json())
             .then(data => {
-                // 将结果显示在页面上
-                document.getElementById('result').innerHTML = '查询结果: ' + JSON.stringify(data);
-                console.log('查询结果:', data);
+                document.getElementById('result').innerHTML = JSON.stringify(data);
             })
             .catch(error => {
-                document.getElementById('result').innerHTML = '请求错误: ' + error;
-                console.error('请求错误:', error);
+                document.getElementById('result').innerHTML = '请求错误：' + error;
             });
-
     }
+
+    // 查询分类
+    function queryCategories() {
+        const type = document.getElementById('queryCategoryType').value;
+
+        let url = '/admin/category/page';
+        if (type) {
+            url += `?type=${type}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 1) {
+                    let html = '<table><tr><th>ID</th><th>名称</th><th>类型</th><th>排序</th><th>创建时间</th></tr>';
+                    // 修改这里，使用data.data.records而不是data.data
+                    const records = data.data.records || [];
+                    records.forEach(item => {
+                        html += `<tr>
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.type === 1 ? '菜品分类' : '套餐分类'}</td>
+                <td>${item.sort}</td>
+                <td>${item.createTime}</td>
+            </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('categoryList').innerHTML = html;
+                    document.getElementById('result').innerHTML = '查询成功，总记录数：' + (data.data.total || 0);
+                } else {
+                    document.getElementById('result').innerHTML = '查询失败：' + data.msg;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 修改分类
+    function updateCategory() {
+        const id = document.getElementById('updateCategoryId').value;
+        const name = document.getElementById('updateCategoryName').value;
+        const sort = document.getElementById('updateCategorySort').value;
+
+        fetch('/admin/category', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id,
+                name: name,
+                sort: sort
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 删除分类
+    function deleteCategory() {
+        const id = document.getElementById('deleteCategoryId').value;
+
+        fetch(`/admin/category?id=${id}`, {
+            method: 'DELETE'
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 添加口味字段
+    function addFlavorField() {
+        const container = document.getElementById('flavorContainer');
+        const div = document.createElement('div');
+        div.className = 'flavor-item';
+        div.style.display = 'flex';
+        div.style.marginBottom = '5px';
+
+        div.innerHTML = `
+        <input type="text" placeholder="口味名称" style="width: 45%; margin-right: 5px;">
+        <input type="text" placeholder="口味值" style="width: 45%; margin-right: 5px;">
+        <button type="button" style="width: 10%;" onclick="removeFlavor(this)">-</button>
+    `;
+
+        container.appendChild(div);
+    }
+
+    // 移除口味字段
+    function removeFlavor(button) {
+        const flavorItem = button.parentNode;
+        flavorItem.parentNode.removeChild(flavorItem);
+    }
+
+    // 添加菜品
+    function addDish() {
+        const name = document.getElementById('dishName').value;
+        const categoryId = document.getElementById('dishCategoryId').value;
+        const price = document.getElementById('dishPrice').value;
+        const image = document.getElementById('dishImage').value;
+        const description = document.getElementById('dishDescription').value;
+        const status = document.getElementById('dishStatus').value;
+
+        // 获取口味信息
+        const flavorItems = document.querySelectorAll('#flavorContainer .flavor-item');
+        const flavors = [];
+
+        flavorItems.forEach(item => {
+            const inputs = item.querySelectorAll('input');
+            const name = inputs[0].value.trim();
+            const value = inputs[1].value.trim();
+
+            if (name && value) {
+                flavors.push({
+                    name: name,
+                    value: value
+                });
+            }
+        });
+
+        fetch('/admin/dish', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                categoryId: categoryId,
+                price: price,
+                image: image,
+                description: description,
+                status: status,
+                flavors: flavors
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 查询菜品
+    // 查询菜品
+    function queryDishes() {
+        const name = document.getElementById('queryDishName').value;
+        const categoryId = document.getElementById('queryDishCategoryId').value;
+        const page = document.getElementById('queryDishPage').value;
+        const pageSize = document.getElementById('queryDishPageSize').value;
+
+        // 创建请求体对象
+        const queryData = {
+            page: page,
+            pageSize: pageSize
+        };
+
+        // 只有在有值时才添加到请求体中
+        if (name) {
+            queryData.name = name;
+        }
+        if (categoryId) {
+            queryData.categoryId = categoryId;
+        }
+
+        // 使用POST请求并在请求体中传递参数
+        fetch('/admin/dish/page', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(queryData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 1) {
+                    let html = '<table><tr><th>ID</th><th>名称</th><th>分类</th><th>价格</th><th>图片</th><th>状态</th><th>描述</th></tr>';
+                    data.data.records.forEach(item => {
+                        html += `<tr>
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.categoryName}</td>
+                <td>${item.price}</td>
+                <td>${item.image}</td>
+                <td>${item.status === 1 ? '起售' : '停售'}</td>
+                <td>${item.description || ''}</td>
+            </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('dishList').innerHTML = html;
+                    document.getElementById('result').innerHTML = '查询成功，总记录数：' + data.data.total;
+                } else {
+                    document.getElementById('result').innerHTML = '查询失败：' + data.msg;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 获取菜品详情
+    function getDishById() {
+        const id = document.getElementById('updateDishId').value;
+
+        fetch(`/admin/dish/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 1) {
+                    const dish = data.data;
+                    document.getElementById('updateDishName').value = dish.name;
+                    document.getElementById('updateDishCategoryId').value = dish.categoryId;
+                    document.getElementById('updateDishPrice').value = dish.price;
+                    document.getElementById('updateDishImage').value = dish.image;
+                    document.getElementById('updateDishDescription').value = dish.description;
+
+                    // 显示口味信息
+                    const flavorContainer = document.getElementById('updateFlavorContainer');
+                    flavorContainer.innerHTML = '';
+
+                    if (dish.flavors && dish.flavors.length > 0) {
+                        dish.flavors.forEach(flavor => {
+                            const div = document.createElement('div');
+                            div.className = 'flavor-item';
+                            div.style.display = 'flex';
+                            div.style.marginBottom = '5px';
+
+                            div.innerHTML = `
+                        <input type="text" value="${flavor.name}" style="width: 45%; margin-right: 5px;">
+                        <input type="text" value="${flavor.value}" style="width: 45%; margin-right: 5px;">
+                        <button type="button" style="width: 10%;" onclick="removeUpdateFlavor(this)">-</button>
+                    `;
+
+                            flavorContainer.appendChild(div);
+                        });
+                    }
+
+                    document.getElementById('updateDishDetail').style.display = 'block';
+                    document.getElementById('result').innerHTML = '获取菜品信息成功';
+                } else {
+                    document.getElementById('result').innerHTML = '获取菜品信息失败：' + data.msg;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 添加修改菜品的口味字段
+    function addUpdateFlavorField() {
+        const container = document.getElementById('updateFlavorContainer');
+        const div = document.createElement('div');
+        div.className = 'flavor-item';
+        div.style.display = 'flex';
+        div.style.marginBottom = '5px';
+
+        div.innerHTML = `
+        <input type="text" placeholder="口味名称" style="width: 45%; margin-right: 5px;">
+        <input type="text" placeholder="口味值" style="width: 45%; margin-right: 5px;">
+        <button type="button" style="width: 10%;" onclick="removeUpdateFlavor(this)">-</button>
+    `;
+
+        container.appendChild(div);
+    }
+
+    // 移除修改菜品的口味字段
+    function removeUpdateFlavor(button) {
+        const flavorItem = button.parentNode;
+        flavorItem.parentNode.removeChild(flavorItem);
+    }
+
+    // 修改菜品
+    function updateDish() {
+        const id = document.getElementById('updateDishId').value;
+        const name = document.getElementById('updateDishName').value;
+        const categoryId = document.getElementById('updateDishCategoryId').value;
+        const price = document.getElementById('updateDishPrice').value;
+        const image = document.getElementById('updateDishImage').value;
+        const description = document.getElementById('updateDishDescription').value;
+
+        // 获取口味信息
+        const flavorItems = document.querySelectorAll('#updateFlavorContainer .flavor-item');
+        const flavors = [];
+
+        flavorItems.forEach(item => {
+            const inputs = item.querySelectorAll('input');
+            const name = inputs[0].value.trim();
+            const value = inputs[1].value.trim();
+
+            if (name && value) {
+                flavors.push({
+                    name: name,
+                    value: value
+                });
+            }
+        });
+
+        fetch('/admin/dish', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id,
+                name: name,
+                categoryId: categoryId,
+                price: price,
+                image: image,
+                description: description,
+                flavors: flavors
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 删除菜品
+    function deleteDishes() {
+        const idsStr = document.getElementById('deleteDishIds').value;
+        const ids = idsStr.split(',').map(id => id.trim()).filter(id => id);
+
+        if (ids.length === 0) {
+            document.getElementById('result').innerHTML = '请输入要删除的菜品ID';
+            return;
+        }
+
+        // 构建URL参数
+        const params = ids.map(id => `ids=${id}`).join('&');
+
+        fetch(`/admin/dish?${params}`, {
+            method: 'DELETE'
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+
+    // 修改菜品状态
+    function changeDishStatus() {
+        const id = document.getElementById('statusDishId').value;
+        const status = document.getElementById('dishNewStatus').value;
+
+        fetch(`/admin/dish/status/${status}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(id)  // 直接发送id，不包装成数组
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = JSON.stringify(data);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = '请求错误：' + error;
+            });
+    }
+    // 弹窗控制
+    function openModal() {
+        document.getElementById('statusModal').style.display = 'block';
+        // 获取当前状态并设置对应的单选按钮
+        fetch('/admin/shop/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 1) {
+                    const status = data.data;
+                    document.querySelector(`input[name="status"][value="${status}"]`).checked = true;
+                }
+            })
+            .catch(error => {
+                console.error('获取营业状态失败:', error);
+            });
+    }
+
+    function closeModal() {
+        document.getElementById('statusModal').style.display = 'none';
+    }
+
+    // 加载当前营业状态
+    function loadStatus() {
+        fetch('/admin/shop/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 1) {
+                    const status = data.data;
+                    const statusButton = document.getElementById('statusButton');
+                    statusButton.innerText = status === 1 ? '当前状态：营业中' : '当前状态：打烊中';
+                    statusButton.style.backgroundColor = status === 1 ? '#4CAF50' : '#f44336';
+                } else {
+                    document.getElementById('statusButton').innerText = '获取状态失败';
+                }
+            })
+            .catch(error => {
+                console.error('获取营业状态失败:', error);
+                document.getElementById('statusButton').innerText = '获取状态失败';
+            });
+    }
+
+    // 更新营业状态
+    function updateStatus() {
+        const status = document.querySelector('input[name="status"]:checked')?.value;
+        if (status === undefined) {
+            alert('请选择一个状态');
+            return;
+        }
+
+        fetch(`/admin/shop/${status}`, {
+            method: 'PUT'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 1) {
+                    alert('营业状态已更新');
+                    closeModal();
+                    loadStatus(); // 更新按钮状态
+                } else {
+                    alert('更新失败: ' + data.msg);
+                }
+            })
+            .catch(error => {
+                console.error('更新营业状态失败:', error);
+                alert('更新失败: ' + error);
+            });
+    }
+
+    // 页面加载时获取当前营业状态
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化页面状态
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('result').innerHTML = '请先登录';
+
+        // 登录成功后加载状态
+        const originalLogin = login;
+        login = function() {
+            originalLogin();
+            // 在登录成功回调中添加加载状态的逻辑
+            setTimeout(loadStatus, 1000); // 延迟1秒加载状态
+        };
+    });
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化页面状态
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('result').innerHTML = '请先登录';
+    });
+
 </script>
 </body>
 </html>

@@ -8,7 +8,10 @@ import com.skytakeout.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+
 
 @RestController
 @RequestMapping("/admin/category")
@@ -16,10 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "分类相关接口")
 public class CategoryController {
 
+    @Autowired
     private CategoryService categoryService;
     @PostMapping
     @Operation(summary = "新建分类")
-    public Result addNewCategory(CategoryDTO categoryDTO) {
+    public Result addNewCategory(@RequestBody CategoryDTO categoryDTO) {
         log.info("新增分类：{}", categoryDTO);
         categoryService.save(categoryDTO);
         return Result.success();
@@ -45,6 +49,14 @@ public class CategoryController {
     public Result changeStatus(@PathVariable Integer status, @RequestParam Long id) {
         log.info("启用禁用员工账号:{},{}", status, id);
         categoryService.setStatus(status, id);
+        return Result.success();
+    }
+
+    @PutMapping
+    @Operation(summary = "修改分类")
+    public Result update(@RequestBody CategoryDTO categoryDTO) {
+        log.info("修改分类：{}", categoryDTO);
+        categoryService.update(categoryDTO);
         return Result.success();
     }
 }

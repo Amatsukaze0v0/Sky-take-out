@@ -10,6 +10,7 @@ import com.skytakeout.result.PageResult;
 import com.skytakeout.service.CategoryService;
 import com.skytakeout.util.AttributeFillerUtil;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +21,12 @@ import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
+
+    @Autowired
     private CategoryRepository categoryRepository;
-/**
- * 新增分类
- * */
+    /**
+     * 新增分类
+     * */
     @Override
     public void save(CategoryDTO categoryDTO) {
         Category category = new Category();

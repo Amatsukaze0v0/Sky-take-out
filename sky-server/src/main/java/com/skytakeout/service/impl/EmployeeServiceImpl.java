@@ -75,6 +75,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
 
+        // 4.5. 清除敏感信息后返回员工对象
+        employee.setPassword(null);  // 清除密码
+        employee.setSalt(null);      // 清除盐值
+
         // 5. 返回员工对象
         return employee;
     }

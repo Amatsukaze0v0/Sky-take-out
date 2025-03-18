@@ -38,6 +38,10 @@ subprojects {
 
         //SpringDoc OpenAPI依赖
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+        //Spring data Redis
+        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     }
 }
 
@@ -46,6 +50,9 @@ project(':sky-server') {
     bootJar {
         mainClass = 'com.skytakeout.SkyTakeOutApplication'
         enabled = true
+    }
+    dependencies {
+        implementation 'org.apache.httpcomponents:httpclient:4.5.13'
     }
 }
 
@@ -65,6 +72,10 @@ project(':sky-common') {
     }
     jar {
         enabled = true
+    }
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     }
 }
 
