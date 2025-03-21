@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -74,7 +75,8 @@ public class CategoryServiceImpl implements CategoryService {
      * */
     @Override
     public void update(CategoryDTO categoryDTO) {
-        Category category = new Category();
+        Category category = categoryRepository.findById(categoryDTO.getId()).orElseThrow();
+
         BeanUtils.copyProperties(categoryDTO, category, AttributeFillerUtil.getNullPropertyNames(categoryDTO));
         //设置修改人和时间
         category.setUpdateTime(LocalDateTime.now());

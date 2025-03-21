@@ -59,4 +59,12 @@ public class CategoryController {
         categoryService.update(categoryDTO);
         return Result.success();
     }
+
+    @DeleteMapping
+    @Operation(summary = "删除分类")
+    public Result delete(@RequestParam Long id) {
+        log.info("正在删除分类ID：{}", id);
+        categoryService.delete(id);
+        return Result.success();
+    }
 }

@@ -22,4 +22,6 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
     // 如果需要联合查询，可以使用JPQL
     @Query("SELECT new com.skytakeout.vo.DishVO(d, c.name) FROM Dish d JOIN Category c ON d.categoryId = c.id WHERE d.id = :id")
     DishVO findDishVOById(@Param("id") Long id);
+
+    Integer getDishStatus(Long dishId);
 }

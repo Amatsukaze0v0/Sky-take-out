@@ -16,6 +16,7 @@ import com.skytakeout.repository.DishRepository;
 import com.skytakeout.repository.SetMealDishRepository;
 import com.skytakeout.result.PageResult;
 import com.skytakeout.service.DishService;
+import com.skytakeout.util.AttributeFillerUtil;
 import com.skytakeout.vo.DishVO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -126,8 +127,9 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public void update(DishDTO dishDTO) {
-        Dish dish = new Dish();
-        BeanUtils.copyProperties(dishDTO, dish);
+        Dish dish = dishRepository.findById(dishDTO.getId()).orElseThrow();
+        BeanUtils.copyProperties(dishDTO, dish, AttributeFillerUtil.getNullPropertyNames(dishDTO));
+
         dish.setUpdateTime(LocalDateTime.now());
         dish.setUpdateUser(BaseContext.getCurrentID());
 
