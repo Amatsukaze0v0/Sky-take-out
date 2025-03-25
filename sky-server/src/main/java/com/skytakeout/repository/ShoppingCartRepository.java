@@ -23,4 +23,6 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long
     @Query("update ShoppingCart set number = :number where id = :id")
     void updateNumberById(ShoppingCart shoppingCart);
 
+    @Query("delete from ShoppingCart where userId = :currentID ")
+    void deleteByUserId(Long currentID);
 }
