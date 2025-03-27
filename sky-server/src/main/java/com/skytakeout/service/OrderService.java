@@ -10,7 +10,7 @@ import com.skytakeout.vo.OrderVO;
 /**
  * 订单提交
  */
-public interface OrderSubmitService {
+public interface OrderService {
     /**
      * 订单提交
      * @param ordersSubmitDTO

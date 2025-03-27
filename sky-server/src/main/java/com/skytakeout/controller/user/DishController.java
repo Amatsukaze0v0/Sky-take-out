@@ -1,7 +1,6 @@
 package com.skytakeout.controller.user;
 
 import com.skytakeout.constant.StatusConstant;
-import com.skytakeout.entity.Category;
 import com.skytakeout.entity.Dish;
 import com.skytakeout.result.Result;
 import com.skytakeout.service.DishService;

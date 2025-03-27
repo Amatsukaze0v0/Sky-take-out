@@ -11,4 +11,6 @@ public class MessageConstant {
     public static final String DISH_BE_RELATED_BY_SETMEAL = "与套餐关联的菜品不可删除";
     public static final String NOT_FOUND = "找不到对象";
     public static final String SETMEAL_ENABLE_FAILED = "套餐内有禁售中菜品";
+    public static final String ADDRESS_BOOK_IS_NULL = "地址簿为空";
+    public static final String SHOPPING_CART_IS_EMPTY = "当前购物车为空";
 }
