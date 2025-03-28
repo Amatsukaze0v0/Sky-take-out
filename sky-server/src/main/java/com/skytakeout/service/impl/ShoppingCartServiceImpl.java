@@ -1,5 +1,6 @@
 package com.skytakeout.service.impl;
 
+import com.skytakeout.constant.MessageConstant;
 import com.skytakeout.context.BaseContext;
 import com.skytakeout.dto.ShoppingCartDTO;
 import com.skytakeout.entity.Dish;
@@ -47,14 +48,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             //判断是菜品还是套餐
             if (dishId != null) {
                 // 添加的是菜品
-                Dish dish = dishRepository.getReferenceById(dishId);
+                Dish dish = dishRepository.findById(dishId)
+                        .orElseThrow(() -> new RuntimeException(MessageConstant.NO_SUCH_DISH + ": " + dishId));
                 shoppingCart.setName(dish.getName());
                 shoppingCart.setImage(dish.getImage());
                 shoppingCart.setAmount(dish.getPrice());
 
             } else {
                 //添加的是套餐
-                SetMeal setMeal = setMealRepository.getReferenceById(setmealId);
+                SetMeal setMeal = setMealRepository.findById(setmealId)
+                        .orElseThrow(() -> new RuntimeException(MessageConstant.NO_SUCH_MEAL + ": " + setmealId));
 
                 shoppingCart.setName(setMeal.getName());
                 shoppingCart.setImage(setMeal.getImage());

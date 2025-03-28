@@ -13,4 +13,6 @@ public class MessageConstant {
     public static final String SETMEAL_ENABLE_FAILED = "套餐内有禁售中菜品";
     public static final String ADDRESS_BOOK_IS_NULL = "地址簿为空";
     public static final String SHOPPING_CART_IS_EMPTY = "当前购物车为空";
+    public static final String NO_SUCH_DISH = "菜品不存在";
+    public static final String NO_SUCH_MEAL = "套餐不存在";
 }
