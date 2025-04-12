@@ -1,16 +1,16 @@
 package com.skytakeout.controller.user;
 
+import com.skytakeout.dto.OrdersPaymentDTO;
 import com.skytakeout.dto.OrdersSubmitDTO;
 import com.skytakeout.result.Result;
 import com.skytakeout.service.OrderService;
+import com.skytakeout.vo.OrderPaymentVO;
 import com.skytakeout.vo.OrderSubmitVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/user/order")
 @RestController("userOrderController")
@@ -29,4 +29,33 @@ public class OrderController {
         return Result.success(submit);
     }
 
+    /**
+     * 订单支付
+     */
+    @PostMapping("/payment")
+    @Operation(summary = "订单支付")
+    public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
+        log.info("订单支付：{}", ordersPaymentDTO);
+        OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
+        return Result.success(orderPaymentVO);
+    }
+
+    /**
+     * 支付成功通知
+     */
+    @PostMapping("/pay-success")
+    @Operation(summary = "支付成功通知")
+    public Result<String> paySuccess(@RequestParam("outTradeNo") String outTradeNo) {
+        log.info("支付成功通知：{}", outTradeNo);
+        orderService.paySuccess(outTradeNo);
+        return Result.success();
+    }
+
+    @GetMapping("/reminder/{id}")
+    @Operation(summary = "客户催单")
+    public Result reminder(@PathVariable("id") Long id) {
+        log.info("客户催单：{}", id);
+        orderService.reminder(id);
+        return Result.success();
+    }
 }

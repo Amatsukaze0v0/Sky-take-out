@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>模拟支付系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .payment-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .payment-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .payment-details {
+            margin-bottom: 20px;
+        }
+        .payment-methods {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .payment-method {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .payment-method.selected {
+            border-color: #1890ff;
+            background-color: #e6f7ff;
+        }
+        .payment-button {
+            text-align: center;
+        }
+        button {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #40a9ff;
+        }
+    </style>
+</head>
+<body>
+<div class="payment-container">
+    <div class="payment-header">
+        <h2>模拟支付系统</h2>
+    </div>
+
+    <div class="payment-details">
+        <p><strong>订单号：</strong> <span th:text="${orderNumber}"></span></p>
+        <p><strong>支付金额：</strong> <span th:text="${amount}">元</span></p>
+    </div>
+
+    <form th:action="@{/mock-payment/process}" method="post">
+        <input type="hidden" name="outTradeNo" th:value="${outTradeNo}">
+
+        <div class="payment-methods">
+            <div class="payment-method" onclick="selectPaymentMethod('wechat')">
+                <input type="radio" name="paymentMethod" value="wechat" id="wechat">
+                <label for="wechat">微信支付</label>
+            </div>
+
+            <div class="payment-method" onclick="selectPaymentMethod('alipay')">
+                <input type="radio" name="paymentMethod" value="alipay" id="alipay">
+                <label for="alipay">支付宝</label>
+            </div>
+
+            <div class="payment-method" onclick="selectPaymentMethod('card')">
+                <input type="radio" name="paymentMethod" value="card" id="card">
+                <label for="card">银行卡</label>
+            </div>
+        </div>
+
+        <div class="payment-button">
+            <button type="submit">确认支付</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function selectPaymentMethod(method) {
+        document.getElementById(method).checked = true;
+
+        // 移除所有选中样式
+        document.querySelectorAll('.payment-method').forEach(function(el) {
+            el.classList.remove('selected');
+        });
+
+        // 添加选中样式
+        document.getElementById(method).parentElement.classList.add('selected');
+    }
+
+    // 默认选中微信支付
+    selectPaymentMethod('wechat');
+</script>
+</body>
+</html>z

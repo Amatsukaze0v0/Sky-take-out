@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Map;  // 添加 Map 的导入
 
 @Data
 @Builder
@@ -19,4 +20,5 @@ public class OrderPaymentVO implements Serializable {
     private String signType; //签名算法
     private String packageStr; //统一下单接口返回的 prepay_id 参数值
 
+    private Map<String, String> additionalData; // 额外增加：模拟微信支付跳转
 }
