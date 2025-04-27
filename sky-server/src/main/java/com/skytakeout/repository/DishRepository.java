@@ -23,5 +23,8 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
     @Query("SELECT new com.skytakeout.vo.DishVO(d, c.name) FROM Dish d JOIN Category c ON d.categoryId = c.id WHERE d.id = :id")
     DishVO findDishVOById(@Param("id") Long id);
 
+    @Query("select count(d.id) from Dish d where d.status = :status")
+    Integer countByStatus(@Param("status") Integer status);
+
     //Integer getDishStatus(Long dishId);
 }

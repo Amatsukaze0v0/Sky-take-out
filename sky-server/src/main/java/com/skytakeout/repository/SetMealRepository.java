@@ -19,4 +19,7 @@ public interface SetMealRepository extends JpaRepository<SetMeal, Long> {
 
     List<SetMeal> findByCategoryIdAndStatus(Long categoryId, int enable);
 
+    @Query("select count(sm.id) from SetMeal sm where sm.status = :status")
+    Integer countByStatus(Integer status);
+
 }
